@@ -1,0 +1,32 @@
+name: Weekly Lehigh Research Scraper
+
+on:
+  schedule:
+    - cron: '0 2 * * 1' # Runs at 02:00 AM every Monday
+  workflow_dispatch: # Allows you to run it manually by clicking a button
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests pandas
+
+      - name: Run the Python script
+        run: python main.py
+
+      - name: Commit and push the new CSV
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add *.csv
+          git commit -m "Auto-update Lehigh Research Data" || exit 0
+          git push
